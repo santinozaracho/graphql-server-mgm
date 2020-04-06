@@ -1,0 +1,31 @@
+{
+  "name": "graphql-server-mgm",
+  "version": "1.0.0",
+  "description": "GraphQL server for MGM proyect",
+  "main": "functions/index.js",
+  "scripts": {
+    "start": "firebase serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santinozaracho/graphql-server-mgm.git"
+  },
+  "keywords": [
+    "graphql"
+  ],
+  "author": "santinozaracho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/santinozaracho/graphql-server-mgm/issues"
+  },
+  "homepage": "https://github.com/santinozaracho/graphql-server-mgm#readme",
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "firebase-admin": "^7.3.0",
+    "firebase-functions": "^3.0.2",
+    "function": "^0.6.1",
+    "morgan": "^1.9.1"
+  }
+}
