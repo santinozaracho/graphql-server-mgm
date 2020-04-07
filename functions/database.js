@@ -4,10 +4,7 @@ const admin = require('firebase-admin');
 //Initialize Google Cloud
 var serviceAccount = require("./serviceAccount.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://modulogestionmedicamentos.firebaseio.com"
-});
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL: "https://modulogestionmedicamentos.firebaseio.com"});
 
 
 // Example de usar where y orderby
@@ -19,7 +16,11 @@ let medicosRef = admin.firestore().collection('medicos');
 let controlesRef =  admin.firestore().collection('controles');
 let cargasRef =  admin.firestore().collection('cargas');
 
+let context = async () => ({ medicinedb: await medicamentosRef });
+
 //Funciones de respuesta
+module.exports = { context }
+
 
 //Funcion de Respuesta de medicamentos
 let getMedicines = () => {
@@ -44,8 +45,9 @@ let getMedicines = () => {
         return err;
       });
 };
-var getMedicamento = (req, res, next) => { 
-	medicamentosRef.doc(req.params.medicineId).get()
+
+let getMedicine = id => { 
+	medicamentosRef.doc(id).get()
 		.then( (doc) => {	
 				if(doc.data()){
 					let datos = {};
@@ -56,14 +58,14 @@ var getMedicamento = (req, res, next) => {
 					datos.presentation = doc.data().presentacioncant +' '+doc.data().presentaciontipo
 					datos.stock = doc.data().cantidad
 					datos.loadDate = new Date(doc.data().loadDate._seconds*1000).toLocaleString()
-					res.json(datos);
+					return datos
 				}else{
-					res.status(400).send({error:'Id Not Found'});
+					return {error:'Id Not Found'}
 				}
 			})
 		.catch((err) => {
 			console.log('Error getting documents', err);
-			res.status(403).send(err); 
+			return err 
       });
 };
 
@@ -326,4 +328,3 @@ let test = function (req, res, next) {
   next()
 };
 
-module.exports = { getMedicines }

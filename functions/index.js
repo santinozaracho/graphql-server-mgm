@@ -13,6 +13,16 @@ const compression = require('compression');
 
 const schema = require('./schema');
 
+//const context = require('./database.js');
+
+//Imports
+//const admin = require('firebase-admin');
+
+//Initialize Google Cloud
+var serviceAccount = require("./serviceAccount.json");
+
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL: "https://modulogestionmedicamentos.firebaseio.com"});
+
 
 //const bodyParser = require('body-parser');
 
@@ -34,6 +44,10 @@ appExpress.use('*', cors({origin:true}) );
 
 const server = new ApolloServer({
     schema,
+    context: async () => ({
+        dbMedicines: await admin.firestore().collection('medicamentos'),
+        dbAssignments: await admin.firestore().collection('asignaciones')
+    }),
     introsprection: true,
     playground: true
 });

@@ -1,54 +1,67 @@
 
 type Query {
-    "Medicines"
-    medicines: [Medicine!]!
-    "Loads"
-    loads: [Load!]!
-    "Controls"
-    controls: [Control!]!
-    "Medics"
-    medics: [Medic!]!
+    "Get all Medicines"
+    medicines: [Medicine]
+    "Get all Assingnments"
+    assignments: [Assignment]
+    "Get all Loads"
+    loads: [Load]
+    "Get all Controls"
+    controls: [Control]
+    "Get all Medics"
+    medics: [Medic]
+    "Get a Medicine by ID"
+    medicine(id: ID!): Medicine
   }
 
 type Medicine {
-  id:ID!
-  code:String!
-  name:String!
-  drugs:String!
-  presentation:String!
-  laboratory:String!
-  stock:Int!
-  loadDate:String!
+  id: ID!
+  code: String!
+  name: String!
+  drugs: [Drug]
+  presentation: String!
+  laboratory: String!
+  stock: Int!
+  loadDate: String!
+}
+
+type Drug {
+  name: String!
 }
 
 type Assignment {
-  id:ID!
-	medicId:ID! 
-	date:String!
-	medicinePrescriptions:String!
+  id: ID!
+	medicId: ID! 
+	date: String!
+	medicinePrescriptions: [MedicineAssignment!]!
+}
+
+type MedicineAssignment {
+  medicineId: ID!
+  quantity: Int!
 }
 
 type Medic {
-  id:ID!
-  idFromApi:ID!
-  name:String!
-  license:String!
-  bornDate:String!
+  id: ID!
+  idFromApi: ID!
+  name: String!
+  license: String!
+  bornDate: String!
 }
 
 type Load {
-  id:ID!
-  date:String!
-  loadData:[MedicineModified!]!
+  id: ID!
+  date: String!
+  loadData: [MedicineModified!]!
 }
 
 type Control {
-  id:ID!
-  date:String!
-  loadData:[MedicineModified!]!
+  id: ID!
+  date: String!
+  loadData: [MedicineModified!]!
 }
 
 type MedicineModified {
-  medicineId:ID!
-  quantity:Int!
+  medicineId: ID!
+  quantity: Int!
 }
