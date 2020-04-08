@@ -1,4 +1,8 @@
 
+//Google Service Account
+var serviceAccount = require("./serviceAccount.json");
+
+//Imports
 const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
@@ -7,62 +11,56 @@ const express = require('express');
 
 const { ApolloServer } = require('apollo-server-express');
 
+const bodyParser = require('body-parser');
+
 const cors = require('cors');
 
-const compression = require('compression');
+const DataLoader = require('dataloader');
 
-const schema = require('./schema');
+const schema = require('./graphql/schema');
+
+//const resolvers = require('./graphql/resolvers');
 
 //const context = require('./database.js');
 
-//Imports
-//const admin = require('firebase-admin');
-
 //Initialize Google Cloud
-var serviceAccount = require("./serviceAccount.json");
-
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount), databaseURL: "https://modulogestionmedicamentos.firebaseio.com"});
 
+//Initialize Express.js Server
+const appGraphQL = express();
 
-//const bodyParser = require('body-parser');
+//Middlewares and CORS
+appGraphQL.use(bodyParser.json());
 
-const appExpress = express();
+appGraphQL.use(bodyParser.urlencoded({extended:false}));
 
-//Initialize Google Cloud
-//admin.initializeApp();
+appGraphQL.use( cors() );
 
-//Middlewares
+//DataLoaders
 
-//appExpress.use(bodyParser.json());
 
-//appExpress.use(bodyParser.urlencoded({extended:false}));
-
-appExpress.use(compression());
-
-//CORS
-appExpress.use('*', cors({origin:true}) );
-
+//Initialize ApolloServer
 const server = new ApolloServer({
     schema,
-    context: async () => ({
-        dbMedicines: await admin.firestore().collection('medicamentos'),
-        dbAssignments: await admin.firestore().collection('asignaciones')
-    }),
-    introsprection: true,
-    playground: true
+    dataSources: () => ({
+          dbMedicines: admin.firestore().collection('medicamentos'),
+          dbAssignments: admin.firestore().collection('asignaciones'),
+          dbMedics: admin.firestore().collection('medicos')
+        }),
+    //context: () => ({ }),
+    playground:true,
+    introspection:true
 });
 
-server.applyMiddleware({ app:appExpress })
+//Join Express.js server with Apollo GraphQL Server
+server.applyMiddleware({ app:appGraphQL, path:'/' })
 
-
-//Enrutamiento Medicamentos..
-//server.get('/graphql', "hola");
 
 //Port 
-appExpress.set('port', process.env.PORT || 4000 );
+appGraphQL.set('port', process.env.PORT || 4000 );
 
 //Listen
-appExpress.listen( appExpress.get('port'), () => { console.log("La API se Incio...", appExpress.get('port')) });
+appGraphQL.listen( appGraphQL.get('port'), () => { console.log("La API se Incio...", appGraphQL.get('port')) });
 
-//Exports
-exports.appExpress = functions.https.onRequest(appExpress);
+//Exports to Google Cloud Functions
+exports.appGraphQL = functions.https.onRequest(appGraphQL);

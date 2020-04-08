@@ -2,16 +2,28 @@
 type Query {
     "Get all Medicines"
     medicines: [Medicine]
-    "Get all Assingnments"
-    assignments: [Assignment]
-    "Get all Loads"
-    loads: [Load]
-    "Get all Controls"
-    controls: [Control]
-    "Get all Medics"
-    medics: [Medic]
+
     "Get a Medicine by ID"
     medicine(id: ID!): Medicine
+
+    "Get all Assingnments"
+    assignments: [Assignment]
+
+    "Get a Assignment by ID"
+    assignment(id: ID!): Assignment
+
+    "Get all Loads"
+    loads: [Load]
+
+    "Get all Controls"
+    controls: [Control]
+
+    "Get all Medics"
+    medics: [Medic]
+
+    "Get a Medic by ID"
+    medic(id: ID!): Medic
+    
   }
 
 type Medicine {
@@ -31,13 +43,13 @@ type Drug {
 
 type Assignment {
   id: ID!
-	medicId: ID! 
+	medic: Medic! 
 	date: String!
 	medicinePrescriptions: [MedicineAssignment!]!
 }
 
 type MedicineAssignment {
-  medicineId: ID!
+  medicine: Medicine!
   quantity: Int!
 }
 
